@@ -13,31 +13,7 @@ Music Recommender AI takes a user's taste profile (genre, mood, energy level) an
 
 ## System Architecture
 
-```
-User Input (Streamlit UI)
-        │
-        ▼
-┌─────────────────────┐
-│  Guardrail Layer    │  ← Gemini validates the user profile
-│  (ai_explainer.py)  │
-└─────────────────────┘
-        │ valid
-        ▼
-┌─────────────────────┐
-│  Recommender Engine │  ← Scores all songs, returns top-k
-│  (recommender.py)   │
-└─────────────────────┘
-        │
-        ▼
-┌─────────────────────┐
-│  AI Explanation     │  ← Gemini explains each recommendation
-│  (ai_explainer.py)  │
-└─────────────────────┘
-        │
-        ▼
-   Results + Logger
-   (logs/recommender_YYYYMMDD.log)
-```
+![System Architecture Diagram](assets/diagram.png)
 
 ---
 
