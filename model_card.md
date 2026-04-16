@@ -1,10 +1,8 @@
-# 🎧 Model Card: Music Recommender Simulation
+# 🎧 Model Card: Music Recommender AI
 
 ## 1. Model Name
 
-Give your model a short, descriptive name.
-
-**FeelingLoader 1.0**
+**FeelingLoader 2.0**
 
 ---
 
@@ -16,7 +14,7 @@ Describe what your recommender is designed to do and who it is for.
 - What assumptions does it make about the user
 - Is this for real users or classroom exploration
 
-FeelingLoader reads a user's song preferences and their favorite genre, mood, and energy level and gives each song points based on how well it matches. It then recommends the top 5 songs with the highest points. This is for classroom exploration to understand how recommendation systems work, not for real users.
+FeelingLoader 2.0 extends the original Module 3 recommender into a full AI-integrated system. It reads a user's preferred genre, mood, and energy level, scores all songs in the catalog, and returns the top recommendations. It then uses the Google Gemini API to generate a natural language explanation of why each song was picked. A guardrail step validates the user profile before any recommendations are made. This is for classroom exploration and portfolio demonstration, not for real production use.
 
 ---
 
@@ -44,7 +42,7 @@ Describe the dataset the model uses.
 - Did you add or remove data
 - Are there parts of musical taste missing in the dataset
 
-There are 10 songs in the catalog with different genres and moods. Genre is a category of similar-sounding songs, and mood describes the emotion the song gives. The dataset includes genres like pop, lofi, rock, jazz, ambient, synthwave, and indie pop, and moods like happy, chill, intense, relaxed, moody, and focused. During testing, adding songs showed how genre having more points than mood meant songs were not always recommended based on how the user actually felt.
+There are 20 songs in the catalog with different genres and moods. Genre is a category of similar-sounding songs, and mood describes the emotion the song gives. The dataset includes genres like pop, lofi, rock, jazz, ambient, synthwave, and indie pop, and moods like happy, chill, intense, relaxed, moody, and focused. During testing, adding songs showed how genre having more points than mood meant songs were not always recommended based on how the user actually felt.
 
 ---
 
@@ -120,3 +118,11 @@ A few sentences about your experience.
 I learned that recommendation systems are written by humans and are usually biased because of the choices those humans make. For example, the coder decided to give genre more points than mood that was not random, it was a decision, and it had consequences. I discovered that even a simple system with just 10 songs and 3 features can already show real problems like filter bubbles, where the algorithm keeps confirming what it thinks it knows about you instead of showing you something new.
 
 Building this changed how I think about apps like Spotify and TikTok. When those apps keep showing me the same type of content, it is not magic it is just weighted math, and someone decided what those weights should be. Human judgment still matters because no algorithm can fully understand how a person feels in the moment.
+
+---
+
+## 10. AI Collaboration
+
+**Helpful suggestion:** When the Gemini API kept failing due to quota and key issues, the AI assistant suggested building a rule-based fallback explanation that uses actual song data (genre match, mood match, energy proximity) to generate readable per-song explanations. This was a good architectural decision — the app now always shows meaningful output even when the API is unavailable, which made the demo more reliable.
+
+**Flawed suggestion:** The AI initially used `gemini-1.5-flash` as the model name, which caused 404 errors because that model was not available for the API version being used. The AI did not anticipate the version mismatch and kept suggesting the same model name even after repeated failures. Switching to `gemini-2.0-flash` and then to the new `google-genai` SDK (replacing the deprecated `google-generativeai` package) required manual debugging of the logs to identify the real cause.
