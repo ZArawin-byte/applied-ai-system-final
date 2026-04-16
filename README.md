@@ -1,113 +1,153 @@
-# Playlist Chaos
+# 🎵 Music Recommender AI
 
-Your AI assistant tried to build a smart playlist generator. The app runs, but some of the behavior is unpredictable. Your task is to explore the app, investigate the code, and use an AI assistant to debug and improve it.
-
-This activity is your first chance to practice AI-assisted debugging on a codebase that is slightly messy, slightly mysterious, and intentionally imperfect.
-
-You do not need to understand everything at once. Approach the app as a curious investigator, work with an AI assistant to explain what you find, and make targeted improvements.
+> **Base project:** Module 3 — Music Recommender Simulation  
+> The original project built a rule-based scoring system that matched songs to a user's preferred genre, mood, and energy level using a CSV catalog. This final version extends that system into a full AI-integrated application with natural language explanations, input validation guardrails, structured logging, and a Streamlit UI.
 
 ---
 
-## How the code is organized
+## What It Does
 
-### `app.py`  
-
-The Streamlit user interface. It handles things like:
-
-- Showing and updating the mood profile  
-- Adding songs  
-- Displaying playlists  
-- Lucky pick  
-- Stats and history
-
-### `playlist_logic.py`  
-
-The logic behind the app, including:
-
-- Normalizing and classifying songs  
-- Building playlists  
-- Merging playlist data  
-- Searching  
-- Computing statistics  
-- Lucky pick mechanics
-
-You will need to look at both files to understand how the app behaves.
+Music Recommender AI takes a user's taste profile (genre, mood, energy level) and returns personalized song recommendations from a catalog. It then uses the **Google Gemini API** to generate a friendly, song-specific explanation of *why* each track was recommended — going beyond raw scores to give listeners a reason they can understand.
 
 ---
 
-## What you will do
+## System Architecture
 
-### 1. Explore the app  
-
-Run the app and try things out:
-
-- Add several songs with different titles, artists, genres, and energy levels  
-- Change the mood profile  
-- Use the search box  
-- Try the lucky pick  
-- Inspect the playlist tabs and stats  
-- Look at the history  
-
-As you explore, write down at least five things that feel confusing, inconsistent, or strange. These might be bugs, quirks, or unexpected design decisions.
-
-### 2. Ask AI for help understanding the code  
-
-Pick one issue from your list. Use an AI coding assistant to:
-
-- Explain the relevant code sections  
-- Walk through what the code is supposed to do  
-- Suggest reasons the behavior might not match expectations  
-
-For example:
-
-> "Here is the function that classifies songs. The app is mislabeling some songs. Help me understand what the function is doing and where the logic might need adjustment."
-
-Before making changes, summarize in your own words what you think is happening.
-
-### 3. Fix at least four issues  
-
-Make improvements based on your investigation.
-
-For each fix:
-
-- Identify the source of the issue  
-- Decide whether to accept or adjust the AI assistant's suggestions  
-- Update the code  
-- Add a short comment describing the fix  
-
-Your fixes may involve logic, calculations, search behavior, playlist grouping, lucky pick behavior, or anything else you discover.
-
-### 4. Test your changes  
-
-After each fix, try interacting with the app again:
-
-- Add new songs  
-- Change the profile  
-- Try search and stats  
-- Check whether playlists behave more consistently  
-
-Confirm that the behavior matches your expectations.
-
-### 5. Optional stretch goals  
-
-If you finish early or want an extra challenge, try one of these:
-
-- Improve search behavior  
-- Add a "Recently added" view  
-- Add sorting controls  
-- Improve how Mixed songs are handled  
-- Add new features to the history view  
-- Introduce better error handling for empty playlists  
-- Add a new playlist category of your own design  
+```
+User Input (Streamlit UI)
+        │
+        ▼
+┌─────────────────────┐
+│  Guardrail Layer    │  ← Gemini validates the user profile
+│  (ai_explainer.py)  │
+└─────────────────────┘
+        │ valid
+        ▼
+┌─────────────────────┐
+│  Recommender Engine │  ← Scores all songs, returns top-k
+│  (recommender.py)   │
+└─────────────────────┘
+        │
+        ▼
+┌─────────────────────┐
+│  AI Explanation     │  ← Gemini explains each recommendation
+│  (ai_explainer.py)  │
+└─────────────────────┘
+        │
+        ▼
+   Results + Logger
+   (logs/recommender_YYYYMMDD.log)
+```
 
 ---
 
-## Tips for success
+## AI Feature: Gemini Integration
 
-- You do not need to solve everything. Focus on exploring and learning.  
-- When confused, ask an AI assistant to explain the code or summarize behavior.  
-- Test the app often. Small experiments reveal useful clues.  
-- Treat surprising behavior as something worth investigating.  
-- Stay curious. The unpredictability is intentional and part of the experience.
+This project uses **Retrieval-Augmented Generation (RAG)**-style design:
+- The recommender engine retrieves the top-k songs using a scoring algorithm
+- The Gemini API then uses those results as context to generate a natural language explanation tailored to the user's profile
+- A guardrail step validates the user's input before any recommendations are made
 
-When you finish, Playlist Chaos will feel more predictable, and you will have taken your first steps into AI-assisted debugging.
+---
+
+## Setup Instructions
+
+**1. Clone the repo**
+```bash
+git clone https://github.com/ZArawin-byte/applied-ai-system-final.git
+cd applied-ai-system-final
+```
+
+**2. Create a virtual environment**
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+**3. Install dependencies**
+```bash
+pip install -r requirements.txt
+```
+
+**4. Set your Gemini API key** (free at aistudio.google.com)
+```bash
+export GEMINI_API_KEY="your-key-here"
+```
+
+**5. Run the app**
+```bash
+streamlit run app.py
+```
+
+---
+
+## Sample Interactions
+
+**Input 1 — Pop / Happy / High Energy**
+- Genre: pop | Mood: happy | Energy: 0.82
+- Top result: *Sunrise City* by Neon Echo (Score: 3.98)
+- AI explanation: "Your love of upbeat pop and happy vibes is perfectly captured here — Sunrise City leads with a genre and mood match, while Gym Hero keeps the energy high..."
+
+**Input 2 — Lofi / Chill / Low Energy**
+- Genre: lofi | Mood: chill | Energy: 0.35
+- Top result: *Library Rain* by Paper Lanterns (Score: 3.85)
+- AI explanation: "For a chill lofi session, these tracks match your mellow energy target closely — Library Rain and Midnight Pages both score high on acousticness and low tempo..."
+
+**Input 3 — Rock / Intense / Very High Energy**
+- Genre: rock | Mood: intense | Energy: 0.90
+- Top result: *Storm Runner* by Voltline (Score: 3.91)
+- AI explanation: "High-energy rock with an intense mood — Storm Runner was built for exactly this profile, matching on genre, mood, and coming in at energy 0.91..."
+
+---
+
+## Design Decisions
+
+- **Rule-based scoring + AI explanation:** The scoring is transparent and testable; AI adds interpretability on top without replacing the logic.
+- **Graceful fallback:** If the Gemini API is unavailable, the system generates a rule-based explanation using the actual song data so the app never shows a blank response.
+- **Logging:** Every AI call and error is logged to `logs/` for traceability.
+- **Guardrails first:** Profile validation runs before any recommendations are generated, preventing wasted API calls on bad input.
+
+---
+
+## Testing Summary
+
+Run tests with:
+```bash
+.venv/bin/pytest tests/
+```
+
+- `test_recommend_returns_songs_sorted_by_score` — verifies top result is the best genre/mood match
+- `test_explain_recommendation_returns_non_empty_string` — verifies explanation is always returned
+
+5 out of 5 scoring scenarios tested manually. The system struggled slightly when genre had no matches in the catalog — low-scoring songs still appeared in results. Guardrail correctly flagged out-of-range energy values in manual testing.
+
+---
+
+## Reflection and Ethics
+
+**Limitations:**
+- Small catalog (20 songs) — real recommenders use millions of tracks
+- No personalization over time — each session is stateless
+- Scoring weights are hand-tuned, not learned from data
+
+**Potential misuse:**
+- A biased catalog could systematically under-recommend certain genres or artists; catalog diversity should be audited regularly
+
+**What surprised me:**
+- The fallback explanation using rule-based logic was often just as readable as the AI version — which raised questions about when AI explanations actually add value
+
+**AI collaboration:**
+- Helpful: Claude suggested the graceful fallback pattern when the API kept failing — that was a good architectural call
+- Flawed: The initial model name (`gemini-1.5-flash`) caused 404 errors; the AI did not anticipate the API version mismatch
+
+---
+
+## Video Walkthrough
+
+🎥 [Loom video link — add before submission]
+
+---
+
+## Repository
+
+[https://github.com/ZArawin-byte/applied-ai-system-final](https://github.com/ZArawin-byte/applied-ai-system-final)
