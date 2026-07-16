@@ -120,7 +120,7 @@ Run tests with:
 
 ## Video Walkthrough
 
-🎥 [Loom video link — add before submission]
+https://drive.google.com/file/d/1o_JNCYxg7mZwvHLlta-vzjqo9PLInUVG/view?usp=sharing 
 
 ---
 
